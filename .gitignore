@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+equity_research_db/
 
 # Virtual environments
 .venv
