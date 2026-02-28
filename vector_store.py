@@ -2,23 +2,27 @@ import os
 import chromadb
 from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
-
 load_dotenv()
 
-def get_vector_collection():
-    #Shared connection logic for ChromaDB.
-    api_key = os.getenv("OPENAI_API_KEY")
-    
-   
-    openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-        api_key=api_key,
+
+def _get_client():
+    return chromadb.PersistentClient(path="./equity_research_db")
+
+def _get_embedding():
+    return embedding_functions.OpenAIEmbeddingFunction(
+        api_key=os.getenv("OPENAI_API_KEY"),
         model_name="text-embedding-3-small"
     )
-    
-    # Persistent storage 
-    chroma_client = chromadb.PersistentClient(path="./equity_research_db")
-    
-    return chroma_client.get_or_create_collection(
+
+def get_vector_collection():
+    return _get_client().get_or_create_collection(
         name="equity_reports",
-        embedding_function=openai_ef
+        embedding_function=_get_embedding()
     )
+
+def get_memory_collection():
+    return _get_client().get_or_create_collection(
+        name="user_memory",
+        embedding_function=_get_embedding()
+    )
+
